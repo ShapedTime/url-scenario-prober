@@ -1,5 +1,5 @@
 # Build stage
-FROM nexus.kblab.local:8083/v1/repositories/kblab/golang:latest AS builder
+FROM golang:latest AS builder
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN go get -d -v ./...
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
 # Run stage
-FROM nexus.kblab.local:8083/v1/repositories/kblab/alpine:latest
+FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
 
