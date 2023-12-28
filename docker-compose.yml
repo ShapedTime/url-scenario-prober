@@ -1,0 +1,9 @@
+version: '3'
+services:
+  my-go-app:
+    build: .
+    volumes:
+      - ./config.yml:/app/config.yml
+      - ./tasks.yml:/app/tasks.yml
+    ports:
+      - "9090:9090"

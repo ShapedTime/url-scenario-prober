@@ -1,0 +1,115 @@
+tasks:
+  - name: login
+    url: https://crmspringapi.kapitalbank.az/generate-token
+    params:
+      method: POST
+      headers:
+        Content-type: application/json
+      body: |
+        {"username":"su_odinregression","password":"0JM&HdS1YbPjI8QChy^$"}
+    register:
+      - var: token
+        parse:
+          - type: body
+          - type: json
+            key: object.jwtRefresh
+    assert_response:
+      status_code:
+        0: '2\d{2}'
+  - name: get_cards
+    url: https://crmspringapi.kapitalbank.az/crm/v2/card/get/cards
+    depends_on: [login]
+    params:
+      headers:
+        Authorization: "{{.token}}"
+        frontRequestTime: 123
+      method: GET
+      get_params:
+        cif: 1007808
+        cmsId: 7499701
+    assert_response:
+      status_code:
+        0: '2\d{2}'
+  - name: get_credits
+    url: https://crmspringapi.kapitalbank.az/crm/v1/credit/get/credits
+    depends_on: [login]
+    params:
+      headers:
+        Authorization: "{{.token}}"
+        frontRequestTime: 123
+      method: GET
+      get_params:
+        cif: 1007808
+        cmsId: 7499701
+    assert_response:
+      status_code:
+        0: '2\d{2}'
+  - name: credit_info
+    url: https://crmspringapi.kapitalbank.az/crm/v1/credit/get/credit-info
+    depends_on: [login]
+    params:
+      headers:
+        Authorization: "{{.token}}"
+        frontRequestTime: 123
+      method: GET
+      get_params:
+        contractNumber: IPKF6946561A112
+    assert_response:
+      status_code:
+        0: '2\d{2}'
+
+  - name: set_offered_customer
+    url: https://crmspringapi.kapitalbank.az/crm/v1/customer/set/offered-customer
+    depends_on: [login]
+    params:
+      headers:
+        Authorization: "{{.token}}"
+        Content-type: application/json
+      method: POST
+      body: |
+        {"phoneNumber":"0703884929, 0123487157, 0125981295","cmsId":"7499701","cif":"1007808","fullName":"ƏMİROV CƏSARƏT TAHİR OĞLU","seriesNum":"AZE16085508"}
+    assert_response:
+      status_code:
+          0: '2\d{2}'
+  - name: search_in_faq
+    url: https://crmspringapi.kapitalbank.az/crm/v1/faq/search/questions
+    depends_on: [login]
+    params:
+      headers:
+        Authorization: "{{.token}}"
+      get_params:
+        keyword: birbank müştərilərə
+      method: POST
+    assert_response:
+      status_code:
+          0: '2\d{2}'
+  - name: get_card_statement
+    url: https://crmspringapi.kapitalbank.az/crm/v1/card/get/statement-atlas
+    depends_on: [login]
+    params:
+      headers:
+        Authorization: "{{.token}}"
+        frontRequestTime: 123
+      method: GET
+      get_params:
+        accountNumber: 38810944007260951123
+        cardUID: AE3BA5428A35A60FE0530100007F6CDA
+        fromDate: 2023-07-25T10:42:44
+        toDate: 2023-07-26T23:59:59
+        limit: 500
+    assert_response:
+      status_code:
+          0: '2\d{2}'
+  - name: search_customer
+    url: https://crmspringapi.kapitalbank.az/crm/v1/customer/search
+    depends_on: [login]
+    params:
+      headers:
+        Authorization: "{{.token}}"
+        Content-type: application/json
+      method: POST
+      body: |
+        {"cif":"1007808","source":"ZEUS"}
+    assert_response:
+      status_code:
+          0: '2\d{2}'

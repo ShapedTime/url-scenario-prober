@@ -1,0 +1,4 @@
+scrape_seconds: 60
+timeout_seconds: 10
+ignore_certificates: true
+prom_port: 9090

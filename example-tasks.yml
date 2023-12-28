@@ -1,0 +1,55 @@
+tasks:
+  - name: login
+    url: https://testapp/gen-tok
+    params:
+      method: POST
+      headers:
+        Content-type: application/json
+      body: |
+        {"username":"uname","password":"pass"}
+    register:
+      - var: token
+        parse:
+          - type: body
+          - type: json
+            key: object.jwtRefresh
+    assert_response:
+      status_code:
+        0: '2\d{2}'
+  - name: get account
+    url: https://testapp/account/get
+    depends_on: [login]
+    params:
+      headers:
+        Authorization: "{{.token}}"
+      method: GET
+      get_params:
+        uname: test
+    assert_response:
+      status_code:
+        0: '2\d{2}'
+  - name: get profile pic
+    url: https://testapp/profpic/get
+    depends_on: [login]
+    params:
+      headers:
+        Authorization: "{{.token}}"
+      method: GET
+      get_params:
+        uname: test
+    assert_response:
+      status_code:
+        0: '2\d{2}'
+  - name: set account phone
+    url: https://testapp/account/set
+    depends_on: [login]
+    params:
+      headers:
+        Authorization: "{{.token}}"
+        Content-type: application/json
+      method: POST
+      body: |
+        {"phoneNumber":"00000000"}
+    assert_response:
+      status_code:
+          0: '2\d{2}'
